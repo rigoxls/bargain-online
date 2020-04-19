@@ -3,6 +3,7 @@ import { User } from './user.entity';
 import { AuthCredentialsDto } from './dto/auth.credentials.dto';
 import { ConflictException, InternalServerErrorException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { Roles } from './enums/roles.enum';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
@@ -15,7 +16,7 @@ export class UserRepository extends Repository<User> {
     user.Salt = salt;
     user.Password = await this.hashPassword(password, salt);
 
-    user.Id_Role = 1; // hacer logica para roles
+    user.Id_Role = this.rolesConvention(authCredentialsDto.role);
 
     user.Lastname = authCredentialsDto.lastName;
     user.Name = authCredentialsDto.name;
@@ -53,7 +54,7 @@ export class UserRepository extends Repository<User> {
         id: user.Id,
         role: Role[0].Role,
         email: user.Email,
-        name: `${user.Name} ${user.Lastname}`
+        name: `${user.Name} ${user.Lastname}`,
       };
     } else {
       return null;
@@ -62,5 +63,22 @@ export class UserRepository extends Repository<User> {
 
   private async hashPassword(password: string, salt: string): Promise<string> {
     return bcrypt.hash(password, salt);
+  }
+
+  private rolesConvention(role): number {
+    let roleId = 1;
+    switch (role) {
+      case Roles.CLIENT:
+        roleId = 2;
+        break;
+      case Roles.PROVIDER:
+        roleId = 3;
+        break;
+      case Roles.EXTERNAL_PROVIDER:
+        roleId = 4;
+        break;
+    }
+
+    return roleId;
   }
 }

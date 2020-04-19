@@ -2,4 +2,5 @@ export enum Roles {
   ADMIN = 'ADMIN',
   CLIENT = 'CLIENT',
   PROVIDER = 'PROVIDER',
+  EXTERNAL_PROVIDER = 'EXTERNAL_PROVIDER',
 }
