@@ -27,6 +27,19 @@ export class ProductService {
     return found;
   }
 
+  async createProducts(createProducts) {
+    const products = createProducts.products;
+    try {
+      products.forEach(product => {
+        this.productRepository.createProduct(product);
+      });
+    } catch (error) {
+      return { error };
+    }
+
+    return { ok: 'products created' };
+  }
+
   async createProduct(createProductDto: CreateProductDto): Promise<Product> {
     return this.productRepository.createProduct(createProductDto);
   }

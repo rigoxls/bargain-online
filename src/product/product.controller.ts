@@ -18,6 +18,11 @@ export class ProductController {
     return this.productService.getProductById(id);
   }
 
+  @Post('/createProducts')
+  createProducts(@Body() createProducts) {
+    return this.productService.createProducts(createProducts);
+  }
+
   @Post()
   @UsePipes(ValidationPipe)
   createProduct(@Body() createProductDto: CreateProductDto): Promise<Product> {
