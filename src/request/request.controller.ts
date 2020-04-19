@@ -2,10 +2,14 @@ import { Body, Controller, Get, Param, ParseIntPipe, Post, UsePipes, ValidationP
 import { RequestService } from './services/request.service';
 import { RequestClient } from './repository/entities/request.entity';
 import { CreateRequestDto } from './dto/create-request.dto';
+import { OfferQueueService } from '../offer-queue/offer-queue.service';
 
 @Controller('request')
 export class RequestController {
-  constructor(private requestService: RequestService) {
+  constructor(
+    private requestService: RequestService,
+    private offerQueueService: OfferQueueService,
+    ) {
   }
 
   @Get()
@@ -25,7 +29,9 @@ export class RequestController {
 
   @Post()
   @UsePipes(ValidationPipe)
-  createRequest(@Body() createRequestDto: CreateRequestDto): Promise<RequestClient> {
-    return this.requestService.createRequest(createRequestDto);
+  async createRequest(@Body() createRequestDto: CreateRequestDto): Promise<RequestClient> {
+    const requestResponse = await this.requestService.createRequest(createRequestDto);
+    this.offerQueueService.sendRequestEmit(createRequestDto, requestResponse.Id);
+    return requestResponse;
   }
 }
