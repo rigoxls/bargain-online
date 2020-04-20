@@ -19,7 +19,7 @@ export class OfferProductRepository extends Repository<OfferProduct> {
 
           FROM [bargain-online].[dbo].[offer_product] as oft
         JOIN [bargain-online].[dbo].[product] as pt on oft.Id_Product = pt.Id
-        WHERE oft.Id = ${offerId}
+        WHERE oft.Id_Offer = ${offerId}
     `);
     return offer;
   }

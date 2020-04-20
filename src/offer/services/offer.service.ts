@@ -4,12 +4,16 @@ import { OfferRepository } from '../repository/offer.repository';
 import { Offer } from '../repository/entities/offer.entity';
 import { CreateOfferDto } from '../dto/create-offer.dto';
 import { OfferProductRepository } from '../repository/offer.product.repository';
+import { UserRepository } from '../../auth/user.repository';
+import { OfferQueueService } from '../../offer-queue/offer-queue.service';
 
 @Injectable()
 export class OfferService {
   constructor(
     @InjectRepository(OfferRepository)
     private offerRepository: OfferRepository,
+    private userRepository: UserRepository,
+    private offerQueueService: OfferQueueService,
     @InjectRepository(OfferProductRepository)
     private offerProductRepository: OfferProductRepository,
   ) {
@@ -58,6 +62,13 @@ export class OfferService {
         this.offerProductRepository.createOfferProduct(offerProduct, offer.Id);
       });
     }
+
+    const userData = await this.userRepository.getUserEmailForRequestId(offer.Id_Request);
+    this.offerQueueService.sendEmail({
+      toDes: userData.Email,
+      subject: 'Ha recibido una nueva oferta',
+      text: `Una nueva oferta se ha recibido, ingresa a tu cuenta para mas detalles`,
+    });
 
     return offer;
   }

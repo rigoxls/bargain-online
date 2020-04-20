@@ -61,6 +61,12 @@ export class UserRepository extends Repository<User> {
     }
   }
 
+  async getUserEmailForRequestId(requestId) {
+    const userEmail = await this.query(`SELECT [Email] FROM [bargain-online].[dbo].[user] as ut
+    JOIN [bargain-online].[dbo].[request_client] as rct on ut.Id = rct.User_Id and rct.Id = ${requestId}`);
+    return userEmail[0];
+  }
+
   private async hashPassword(password: string, salt: string): Promise<string> {
     return bcrypt.hash(password, salt);
   }
